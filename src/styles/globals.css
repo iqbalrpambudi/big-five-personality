@@ -20,7 +20,161 @@
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif;
+  background-color: #f3f4f6;
+  /* Tailwind gray-100 */
+}
+
+.question-card {
+  background-color: white;
+  border-radius: 0.75rem;
+  /* rounded-xl */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  /* shadow-lg */
+  margin-bottom: 1.5rem;
+  /* mb-6 */
+  padding: 1.5rem;
+  /* p-6 */
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  /* py-2 px-3 */
+  border-radius: 0.375rem;
+  /* rounded-md */
+  border: 1px solid #d1d5db;
+  /* border-gray-300 */
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  margin-right: 0.5rem;
+  /* mr-2 */
+  margin-bottom: 0.5rem;
+  /* mb-2 for smaller screens */
+}
+
+.radio-label:hover {
+  background-color: #e5e7eb;
+  /* hover:bg-gray-200 */
+}
+
+.radio-label input[type="radio"]:checked+span {
+  font-weight: 600;
+  /* semibold */
+}
+
+.radio-label input[type="radio"]:checked {
+  accent-color: #3b82f6;
+  /* blue-500 */
+}
+
+.selected-radio {
+  background-color: #dbeafe;
+  /* bg-blue-100 */
+  border-color: #3b82f6;
+  /* border-blue-500 */
+}
+
+.action-button {
+  /* Generic class for submit and download buttons */
+  background-color: #3b82f6;
+  /* bg-blue-500 */
+  color: white;
+  padding: 0.75rem 1.5rem;
+  /* py-3 px-6 */
+  border-radius: 0.5rem;
+  /* rounded-lg */
+  font-weight: 600;
+  /* semibold */
+  transition: background-color 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.action-button:hover {
+  background-color: #2563eb;
+  /* hover:bg-blue-600 */
+}
+
+.action-button.secondary {
+  /* For download button or other secondary actions */
+  background-color: #6b7280;
+  /* bg-gray-500 */
+}
+
+.action-button.secondary:hover {
+  background-color: #4b5563;
+  /* hover:bg-gray-600 */
+}
+
+.result-card {
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  margin-top: 1rem;
+  /* Reduced margin-top for result cards */
+  padding: 1.5rem;
+  /* p-6 */
+}
+
+.progress-bar-container {
+  width: 100%;
+  background-color: #e5e7eb;
+  /* bg-gray-200 */
+  border-radius: 0.25rem;
+  /* rounded-sm */
+  height: 1rem;
+  /* h-4 */
+  margin-top: 0.25rem;
+  /* mt-1 */
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #3b82f6;
+  /* bg-blue-500 */
+  border-radius: 0.25rem;
+  /* rounded-sm */
+  transition: width 0.5s ease-in-out;
+}
+
+/* Custom modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.modal-button {
+  background-color: #3b82f6;
+  /* bg-blue-500 */
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  margin-top: 1rem;
+  border: none;
+  cursor: pointer;
+}
+
+.modal-button:hover {
+  background-color: #2563eb;
+  /* hover:bg-blue-600 */
 }
