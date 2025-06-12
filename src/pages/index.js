@@ -9,19 +9,66 @@ import {
 import dataonLogo from "@/assets/dataon.png";
 import sunfishLogo from "@/assets/sunfishlogo.png";
 import { useState, useEffect } from "react";
-import { generatePDF } from '@/utils/pdfGenerator';
+import { generatePDF } from "@/utils/pdfGenerator";
+import TestResult from "@/components/TestResult";
+import config from "../../postcss.config.mjs";
+
+const _dummy = {
+  1: 3,
+  2: 1,
+  3: 3,
+  4: 2,
+  5: 4,
+  6: 2,
+  7: 4,
+  8: 3,
+  9: 3,
+  10: 3,
+  11: 2,
+  12: 2,
+  13: 3,
+  14: 4,
+  15: 4,
+  16: 2,
+  17: 3,
+  18: 2,
+  19: 1,
+  20: 2,
+  21: 1,
+  22: 4,
+  23: 2,
+  24: 3,
+  25: 1,
+  26: 3,
+  27: 5,
+  28: 1,
+  29: 3,
+  30: 1,
+  31: 3,
+  32: 1,
+  33: 4,
+  34: 3,
+  35: 2,
+  36: 3,
+  37: 3,
+  38: 3,
+  39: 1,
+  40: 3,
+  41: 1,
+  42: 3,
+  43: 2,
+  44: 3,
+};
 
 export default function Home() {
   const [showResults, setShowResults] = useState(false);
-  const [answers, setAnswers] = useState({});
+  const [answers, setAnswers] = useState(_dummy);
   const [results, setResults] = useState({});
   const [testDuration, setTestDuration] = useState(0);
   const [isSending, setIsSending] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [startTime, setStartTime] = useState(null);
-  const [email, setEmail] = useState("");
-  const [showEmailForm, setShowEmailForm] = useState(false);
 
   useEffect(() => {
     setStartTime(new Date());
@@ -38,37 +85,36 @@ export default function Home() {
     e.preventDefault();
     const scores = calculateScores();
     if (scores) {
-      setResults(scores);
-      setShowResults(true);
-      setShowEmailForm(true);
+      handleEmailSubmit(scores);
     }
   };
 
-  const handleEmailSubmit = async (e) => {
-    e.preventDefault();
+  const handleEmailSubmit = async (res) => {
     setIsSending(true);
     try {
-      const response = await fetch('/api/send-results', {
-        method: 'POST',
+      const response = await fetch("/api/send-results", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email,
-          results,
+          results: res,
           testDuration,
         }),
       });
 
       const data = await response.json();
+
+      console.log(data);
       if (response.ok) {
-        setModalMessage('Results have been sent to your email!');
+        setModalMessage("Your response has been recorded!, thanks");
+        setShowResults(true);
+        setResults(res);
       } else {
-        setModalMessage(data.message || 'Failed to send email. Please try again.');
+        setModalMessage(data.message || "Failed to send response. Please try again.");
       }
-      setShowModal(true);
     } catch (error) {
-      setModalMessage('An error occurred while sending the email.');
+      setModalMessage("An error occurred while sending data");
       setShowModal(true);
     } finally {
       setIsSending(false);
@@ -109,24 +155,13 @@ export default function Home() {
     return scores;
   };
 
-  const getInterpretation = (traitName, score) => {
-    const { min, max } = traitMapping[traitName];
-    const range = max - min;
-    const lowThreshold = min + range / 3;
-    const highThreshold = min + (2 * range) / 3;
-
-    if (score < lowThreshold) return traitDescriptions[traitName].Low;
-    if (score <= highThreshold) return traitDescriptions[traitName].Moderate;
-    return traitDescriptions[traitName].High;
-  };
-
   const downloadResults = async () => {
     try {
       setIsSending(true);
       const pdf = await generatePDF(results, testDuration, traitMapping, traitDescriptions);
-      pdf.save('personality-test-results.pdf');
+      pdf.save("personality-test-results.pdf");
     } catch (error) {
-      setModalMessage('Failed to generate PDF. Please try again.');
+      setModalMessage("Failed to generate PDF. Please try again.");
       setShowModal(true);
     } finally {
       setIsSending(false);
@@ -179,67 +214,7 @@ export default function Home() {
           </div>
         </form>
       ) : (
-        <div className="mt-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-4">
-            Your Personality Test Results
-          </h2>
-          <p className="text-center text-gray-600 mb-6">Time taken: {testDuration}</p>
-
-          <div className="grid grid-cols-1 gap-6">
-            {Object.entries(results).map(([trait, score]) => {
-              const { max } = traitMapping[trait];
-              const percentage = ((score - traitMapping[trait].min) / (max - traitMapping[trait].min)) * 100;
-              return (
-                <div key={trait} className="result-card p-6">
-                  <h3 className="text-xl font-semibold text-gray-700 mb-1">{trait}</h3>
-                  <p className="text-lg text-blue-600 font-bold mb-2">
-                    Score: {score} / {max}
-                  </p>
-                  <div className="progress-bar-container mb-3">
-                    <div
-                      className="progress-bar"
-                      style={{ width: `${Math.max(0, Math.min(100, percentage))}%` }}
-                    />
-                  </div>
-                  <p className="text-gray-600 text-sm">{getInterpretation(trait, score)}</p>
-                </div>
-              );
-            })}
-          </div>
-
-          {showEmailForm && (
-            <form onSubmit={handleEmailSubmit} className="mt-8 max-w-md mx-auto">
-              <div className="mb-4">
-                <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
-                  Enter your email to receive the results:
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  required
-                />
-              </div>
-              <div className="flex justify-center">
-                <button
-                  type="submit"
-                  className="action-button"
-                  disabled={isSending}
-                >
-                  {isSending ? "Sending..." : "Send Results to Email"}
-                </button>
-              </div>
-            </form>
-          )}
-
-          <div className="mt-8 flex justify-center">
-            <button onClick={downloadResults} className="action-button secondary">
-              Download Results
-            </button>
-          </div>
-        </div>
+        <TestResult results={results} testDuration={testDuration} />
       )}
 
       {showModal && (
