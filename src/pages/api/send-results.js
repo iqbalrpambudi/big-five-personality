@@ -1,6 +1,11 @@
 import { sendResultsEmail } from "@/utils/emailService";
 
 export default async function handler(req, res) {
+  const email = process.env.EMAIL_RECEIVER;
+
+  console.log("email", email);
+  console.log("req", req.body);
+
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
   }
@@ -12,7 +17,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const result = await sendResultsEmail('recruitment@dataon.com', results, testDuration);
+    const result = await sendResultsEmail(email, results, testDuration);
 
     if (result.success) {
       return res.status(200).json({ message: "Email sent successfully" });

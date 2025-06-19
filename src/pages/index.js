@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import { generatePDF } from "@/utils/pdfGenerator";
 import TestResult from "@/components/TestResult";
 import config from "../../postcss.config.mjs";
+import { formatDuration } from "@/utils/formatDuration";
 
 const _dummy = {
   1: 3,
@@ -62,7 +63,7 @@ const _dummy = {
 
 export default function Home() {
   const [showResults, setShowResults] = useState(false);
-  const [answers, setAnswers] = useState({});
+  const [answers, setAnswers] = useState(_dummy);
   const [results, setResults] = useState({});
   const [testDuration, setTestDuration] = useState(0);
   const [isSending, setIsSending] = useState(false);
@@ -84,12 +85,15 @@ export default function Home() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const scores = calculateScores();
+    const duration = formatDuration(new Date() - startTime);
+    setTestDuration(duration);
+
     if (scores) {
-      handleEmailSubmit(scores);
+      handleEmailSubmit(scores, duration);
     }
   };
 
-  const handleEmailSubmit = async (res) => {
+  const handleEmailSubmit = async (score, duration) => {
     setIsSending(true);
     try {
       const response = await fetch("/api/send-results", {
@@ -98,33 +102,27 @@ export default function Home() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          results: res,
-          testDuration,
+          results: score,
+          testDuration: duration,
         }),
       });
 
       const data = await response.json();
 
-      console.log(data);
       if (response.ok) {
+        setResults(score);
         setModalMessage("Your response has been recorded!, thanks");
         setShowResults(true);
-        setResults(res);
       } else {
         setModalMessage(data.message || "Failed to send response. Please try again.");
       }
     } catch (error) {
+      console.log("error", error);
       setModalMessage("An error occurred while sending data");
       setShowModal(true);
     } finally {
       setIsSending(false);
     }
-  };
-
-  const formatDuration = (ms) => {
-    const seconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(seconds / 60);
-    return `${minutes} minute(s) and ${seconds % 60} second(s)`;
   };
 
   const calculateScores = () => {
@@ -134,10 +132,6 @@ export default function Home() {
       setShowModal(true);
       return null;
     }
-
-    const endTime = new Date();
-    const duration = endTime - startTime;
-    setTestDuration(formatDuration(duration));
 
     const scores = {};
     for (const trait in traitMapping) {
@@ -153,19 +147,6 @@ export default function Home() {
       scores[trait] = score;
     }
     return scores;
-  };
-
-  const downloadResults = async () => {
-    try {
-      setIsSending(true);
-      const pdf = await generatePDF(results, testDuration, traitMapping, traitDescriptions);
-      pdf.save("personality-test-results.pdf");
-    } catch (error) {
-      setModalMessage("Failed to generate PDF. Please try again.");
-      setShowModal(true);
-    } finally {
-      setIsSending(false);
-    }
   };
 
   return (
@@ -190,8 +171,7 @@ export default function Home() {
                   {answerOptions.map((opt) => (
                     <label
                       key={opt.value}
-                      className={`radio-label ${answers[q.id] === opt.value ? "selected-radio" : ""}`}
-                    >
+                      className={`radio-label ${answers[q.id] === opt.value ? "selected-radio" : ""}`}>
                       <input
                         type="radio"
                         name={`q${q.id}`}
