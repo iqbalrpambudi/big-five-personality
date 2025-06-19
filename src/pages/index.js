@@ -70,6 +70,8 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [startTime, setStartTime] = useState(null);
+  const [userEmail, setUserEmail] = useState("");
+  const [isEmailSubmitted, setIsEmailSubmitted] = useState(false);
 
   useEffect(() => {
     setStartTime(new Date());
@@ -82,6 +84,21 @@ export default function Home() {
     }));
   };
 
+  const handleEmailChange = (e) => {
+    setUserEmail(e.target.value);
+  };
+
+  const handleEmailSubmit = async (e) => {
+    e.preventDefault();
+    if (!userEmail || !userEmail.includes('@')) {
+      setModalMessage("Please enter a valid email address");
+      setShowModal(true);
+      return;
+    }
+    setIsEmailSubmitted(true);
+    setStartTime(new Date());
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const scores = calculateScores();
@@ -89,11 +106,11 @@ export default function Home() {
     setTestDuration(duration);
 
     if (scores) {
-      handleEmailSubmit(scores, duration);
+      submitResults(scores, duration);
     }
   };
 
-  const handleEmailSubmit = async (score, duration) => {
+  const submitResults = async (score, duration) => {
     setIsSending(true);
     try {
       const response = await fetch("/api/send-results", {
@@ -104,6 +121,7 @@ export default function Home() {
         body: JSON.stringify({
           results: score,
           testDuration: duration,
+          email: userEmail
         }),
       });
 
@@ -162,39 +180,67 @@ export default function Home() {
       </header>
 
       {!showResults ? (
-        <form onSubmit={handleSubmit}>
-          <div>
-            {questions.map((q) => (
-              <div key={q.id} className="question-card">
-                <p className="text-lg font-semibold text-gray-700 mb-4">{q.text}</p>
-                <div className="flex flex-wrap justify-center md:justify-start">
-                  {answerOptions.map((opt) => (
-                    <label
-                      key={opt.value}
-                      className={`radio-label ${answers[q.id] === opt.value ? "selected-radio" : ""}`}>
-                      <input
-                        type="radio"
-                        name={`q${q.id}`}
-                        value={opt.value}
-                        checked={answers[q.id] === opt.value}
-                        onChange={(e) => handleAnswerChange(q.id, e.target.value)}
-                        className="mr-2"
-                      />
-                      <span>{opt.text}</span>
-                    </label>
-                  ))}
+        !isEmailSubmitted ? (
+          <div className="email-form-container">
+            <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">Enter Your Email</h2>
+              <p className="text-gray-600 mb-4">Please provide your email address to receive your personality test results.</p>
+              <form onSubmit={handleEmailSubmit} className="space-y-4">
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                  <input
+                    id="email"
+                    type="email"
+                    value={userEmail}
+                    onChange={handleEmailChange}
+                    placeholder="youremail@example.com"
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
                 </div>
-              </div>
-            ))}
+                <div className="text-center mt-2">
+                  <button type="submit" className="action-button">
+                    Start Test
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-          <div className="text-center mt-8">
-            <button type="submit" className="action-button" disabled={isSending}>
-              {isSending ? "Submitting..." : "View Results"}
-            </button>
-          </div>
-        </form>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <div>
+              {questions.map((q) => (
+                <div key={q.id} className="question-card">
+                  <p className="text-lg font-semibold text-gray-700 mb-4">{q.text}</p>
+                  <div className="flex flex-wrap justify-center md:justify-start">
+                    {answerOptions.map((opt) => (
+                      <label
+                        key={opt.value}
+                        className={`radio-label ${answers[q.id] === opt.value ? "selected-radio" : ""}`}>
+                        <input
+                          type="radio"
+                          name={`q${q.id}`}
+                          value={opt.value}
+                          checked={answers[q.id] === opt.value}
+                          onChange={(e) => handleAnswerChange(q.id, e.target.value)}
+                          className="mr-2"
+                        />
+                        <span>{opt.text}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="text-center mt-8">
+              <button type="submit" className="action-button" disabled={isSending}>
+                {isSending ? "Submitting..." : "View Results"}
+              </button>
+            </div>
+          </form>
+        )
       ) : (
-        <TestResult results={results} testDuration={testDuration} />
+        <TestResult results={results} testDuration={testDuration} userEmail={userEmail} />
       )}
 
       {showModal && (

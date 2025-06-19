@@ -1,23 +1,21 @@
 import { sendResultsEmail } from "@/utils/emailService";
 
 export default async function handler(req, res) {
-  const email = process.env.EMAIL_RECEIVER;
-
-  console.log("email", email);
-  console.log("req", req.body);
+  const adminEmail = process.env.EMAIL_RECEIVER;
 
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
   }
 
   try {
-    const { results, testDuration } = req.body;
+    const { results, testDuration, email } = req.body;
 
-    if (!results || !testDuration) {
+    if (!results || !testDuration || !email) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const result = await sendResultsEmail(email, results, testDuration);
+    // Send to both admin and user
+    const result = await sendResultsEmail(adminEmail, results, testDuration, email);
 
     if (result.success) {
       return res.status(200).json({ message: "Email sent successfully" });

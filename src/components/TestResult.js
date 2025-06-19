@@ -17,7 +17,7 @@ export default function TestResult(props) {
       <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-4">
         Your Personality Test Results
       </h2>
-      <p className="text-center text-gray-600 mb-6">Time taken: {props.testDuration}</p>
+      <p className="text-center text-gray-600 mb-2">Time taken: {props.testDuration}</p>
 
       <div className="grid grid-cols-1 gap-6">
         {Object.entries(props.results).map(([trait, score]) => {

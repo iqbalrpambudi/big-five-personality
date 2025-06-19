@@ -11,14 +11,15 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export const sendResultsEmail = async (to, results, testDuration) => {
+export const sendResultsEmail = async (to, results, testDuration, userEmail) => {
   try {
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to,
       subject: 'Your Big Five Personality Test Results',
       html: `
-        <h2>Your Personality Test Results</h2>
+        <h2>Personality Test Results</h2>
+        <p>Email: ${userEmail}</p>
         <p>Test Duration: ${testDuration}</p>
         <div>
           ${Object.entries(results)
@@ -42,4 +43,4 @@ export const sendResultsEmail = async (to, results, testDuration) => {
     console.error('Error sending email:', error);
     return { success: false, error: error.message };
   }
-}; 
+};
