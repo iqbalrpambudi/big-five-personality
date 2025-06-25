@@ -3,6 +3,8 @@ import { sendResultsEmail } from "@/utils/emailService";
 export default async function handler(req, res) {
   const adminEmail = process.env.EMAIL_RECEIVER;
 
+  console.log("adminEmail", adminEmail);
+
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
   }

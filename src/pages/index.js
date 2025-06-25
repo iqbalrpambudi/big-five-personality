@@ -63,7 +63,7 @@ const _dummy = {
 
 export default function Home() {
   const [showResults, setShowResults] = useState(false);
-  const [answers, setAnswers] = useState(_dummy);
+  const [answers, setAnswers] = useState({});
   const [results, setResults] = useState({});
   const [testDuration, setTestDuration] = useState(0);
   const [isSending, setIsSending] = useState(false);
