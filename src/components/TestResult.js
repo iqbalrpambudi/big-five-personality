@@ -26,6 +26,7 @@ export default function TestResult(props) {
           return (
             <div key={trait} className="result-card p-6">
               <h3 className="text-xl font-semibold text-gray-700 mb-1">{trait}</h3>
+              <p className="text-gray-600 text-sm mb-2">{traitDescriptions[trait].Description}</p>
               <p className="text-lg text-blue-600 font-bold mb-2">
                 Score: {score} / {max}
               </p>

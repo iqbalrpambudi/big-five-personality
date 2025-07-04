@@ -57,26 +57,31 @@ export const traitMapping = {
 
 export const traitDescriptions = {
   Openness: {
+    Description: "How open a person is to new ideas and experiences",
     Low: "Practical, conventional, prefers routine.",
     Moderate: "Balances practicality with openness to new ideas.",
     High: "Curious, wide range of interests, independent, and open to new experiences.",
   },
   Conscientiousness: {
+    Description: "How goal-directed, persistent, and organized a person is",
     Low: "Impulsive, may be disorganized, and careless.",
     Moderate: "Reasonably reliable and organized.",
     High: "Hard-working, dependable, organized, and responsible.",
   },
   Extroversion: {
+    Description: "How much a person is energized by the outside world",
     Low: "Tends to be quiet, reserved, and prefers solitude.",
     Moderate: "Comfortable in social situations as well as when alone.",
     High: "Outgoing, warm, sociable, enthusiastic, and seeks adventure.",
   },
   Agreeableness: {
+    Description: "How much a person puts others interests and needs ahead of their own",
     Low: "May be critical, uncooperative, and sometimes suspicious.",
     Moderate: "Reasonably cooperative and empathetic.",
     High: "Helpful, trusting, empathetic, and cooperative.",
   },
   Neuroticism: {
+    Description: "How sensitive a person is to stress and negative emotional triggers",
     Low: "Calm, emotionally stable, doesn't panic easily, and handles stress maturely.",
     Moderate: "Experiences negative emotions occasionally but is generally stable.",
     High: "Anxious, may be unhappy, prone to emotional swings, and vulnerable to stress.",
